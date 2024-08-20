@@ -94,7 +94,7 @@ export class TokenService {
       sameSite: 'lax',
       path: '/',
       domain: IS_PROD
-        ? `${this.configService.getOrThrow<string>('domain')}`
+        ? `.${this.configService.getOrThrow<string>('domain')}`
         : '',
       maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
     } as const;

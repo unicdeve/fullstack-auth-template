@@ -16,6 +16,12 @@ export class AuthService {
     private prismaService: PrismaService,
     private configService: ConfigService,
   ) {}
+
+  /**
+   * @description creates new user in DB
+   * @param SignUpDto
+   * @returns Promise<AuthTokens>
+   */
   async createUser(data: SignUpDto) {
     const salt = await genSalt(
       this.configService.getOrThrow<number>('password_salt'),
@@ -75,21 +81,6 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  /**
-   * @description compares savedHashPassowrd and user's password
-   * @param authPassword
-   * @param password
-   * @returns Promise<boolean>
-   */
-  private async validatePasswords(
-    authPassword: string,
-    password: string,
-  ): Promise<boolean> {
-    const isMatch = await compare(password, authPassword).then((same) => same);
-
-    return isMatch;
   }
 
   /**
@@ -160,5 +151,20 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  /**
+   * @description compares savedHashPassowrd and user's password
+   * @param authPassword
+   * @param password
+   * @returns Promise<boolean>
+   */
+  private async validatePasswords(
+    authPassword: string,
+    password: string,
+  ): Promise<boolean> {
+    const isMatch = await compare(password, authPassword).then((same) => same);
+
+    return isMatch;
   }
 }

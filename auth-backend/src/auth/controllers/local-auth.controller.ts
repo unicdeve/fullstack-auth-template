@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Req,
@@ -13,10 +14,10 @@ import {
 import { AuthService } from '../services/auth.service';
 import { Response } from 'express';
 import { SignUpDto } from 'auth/dto/signup.dto';
-import { TokenService } from 'auth/services/token.service';
-import { RequestWithAuthUser, RequestWithPassportUser } from 'auth/auth.types';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'auth/jwt-auth.guard';
+import { RequestWithAuthUser, RequestWithPassportUser } from 'auth/auth.types';
+import { TokenService } from 'auth/services/token.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('local-auth')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -79,6 +80,23 @@ export class LocalAuthContoller {
     return {
       status: 'success',
       data: user,
+      meta: null,
+    };
+  }
+
+  /**
+   * @description log out authenticated user
+   * @param req.authorization
+   * @returns Promise<any>
+   */
+  @UseGuards(JwtAuthGuard)
+  @Delete('/logout')
+  public async logout(@Res({ passthrough: true }) res: Response) {
+    this.tokenService.deleteAuthCookies(res);
+
+    return {
+      status: 'success',
+      data: null,
       meta: null,
     };
   }
