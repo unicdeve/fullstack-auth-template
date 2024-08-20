@@ -3,6 +3,8 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { ApiExceptionFilter } from 'api-exception.filter';
+import { ApiValidationPipe } from 'api-validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,7 +12,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const cookieSecret = configService.get<string>('cookie_secret');
 
-  // You can add more secrets for rotation
+  // You can add more secrets for rotations
   app.use(cookieParser([cookieSecret]));
 
   const clientOrigin = configService.get<string>('foontend_client_origin');
@@ -20,6 +22,9 @@ async function bootstrap() {
     credentials: true,
     maxAge: 86400,
   });
+
+  app.useGlobalFilters(new ApiExceptionFilter());
+  app.useGlobalPipes(new ApiValidationPipe());
 
   const port = configService.get<number>('port');
 
