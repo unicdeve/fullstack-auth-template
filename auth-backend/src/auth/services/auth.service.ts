@@ -8,6 +8,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { BadRequestError } from 'libs/errors/bad-request.error';
 import { SignInDto } from 'auth/dto/signin.dto';
 import { User } from '@prisma/client';
+import { OAuthProvider, OAuthUserType } from 'auth/auth.types';
 
 @Injectable()
 export class AuthService {
@@ -89,5 +90,75 @@ export class AuthService {
     const isMatch = await compare(password, authPassword).then((same) => same);
 
     return isMatch;
+  }
+
+  /**
+   * @description creates new user in DB
+   * @param SignInDto
+   * @returns Promise<AuthTokens>
+   */
+  async getAuthenticatedUser(userId: string) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      delete user.password;
+
+      return user;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * @description creates/updates user in DB based on OAuth type (Facebook or Google)
+   * @param res - Express response object
+   * @param oAuthUser - The OAuth user data
+   * @param provider - 'facebook' or 'google' or 'github'
+   * @returns Promise<AuthTokens, User>
+   */
+  async findOAuthUserOrCreate(
+    oAuthUser: OAuthUserType,
+    provider: OAuthProvider,
+  ): Promise<User> {
+    const providerId = `${provider}Id`;
+
+    let user = await this.prismaService.user.findFirst({
+      where: {
+        OR: [{ [providerId]: oAuthUser.id }, { email: oAuthUser.email }],
+      },
+    });
+
+    if (user && user.email) {
+      // TODO: Do you want to disallow the user if an account with the email was already created? Your choice
+      // throw new Error('User with this email already exist?');
+    }
+
+    /**
+     * Current Implementation = If user exists but is not linked with the OAuth provider, automatically link the user
+     */
+    if (user && !user[providerId]) {
+      user = await this.prismaService.user.update({
+        where: { email: oAuthUser.email },
+        data: { [providerId]: oAuthUser.id },
+      });
+    }
+
+    // If no user found, create a new one
+    if (!user) {
+      user = await this.prismaService.user.create({
+        data: {
+          [providerId]: oAuthUser.id,
+          email: oAuthUser.email,
+          firstName: oAuthUser.firstName,
+          lastName: oAuthUser.lastName,
+        },
+      });
+    }
+
+    return user;
   }
 }
