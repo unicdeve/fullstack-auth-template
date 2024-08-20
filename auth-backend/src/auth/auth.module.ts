@@ -6,6 +6,12 @@ import { LocalAuthContoller } from './controllers/local-auth.controller';
 import { AuthService } from './services/auth.service';
 import { TokenService } from './services/token.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleAuthContoller } from './controllers/google-auth.controller';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
+import { FacebookAuthContoller } from './controllers/facebook-auth.controller';
+import { GithubStrategy } from './strategies/github.strategy';
+import { GithubAuthContoller } from './controllers/github-auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
@@ -24,7 +30,19 @@ import { LocalStrategy } from './strategies/local.strategy';
       }),
     }),
   ],
-  controllers: [LocalAuthContoller],
-  providers: [AuthService, TokenService, LocalStrategy],
+  controllers: [
+    LocalAuthContoller,
+    GoogleAuthContoller,
+    FacebookAuthContoller,
+    GithubAuthContoller,
+  ],
+  providers: [
+    AuthService,
+    TokenService,
+    GoogleStrategy,
+    FacebookStrategy,
+    GithubStrategy,
+    LocalStrategy,
+  ],
 })
 export class AuthModule {}
