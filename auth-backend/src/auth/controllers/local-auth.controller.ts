@@ -75,7 +75,7 @@ export class LocalAuthContoller {
   public async getUser(@Req() req: RequestWithAuthUser) {
     const userId = req?.user?.userId || '';
 
-    const user = await this.authService.getAuthenticatedUser(userId);
+    const user = await this.authService.findUserById(userId);
 
     return {
       status: 'success',

@@ -43,7 +43,7 @@ export class GithubAuthContoller {
   @UseGuards(AuthGuard('github'))
   async githubAuthRedirect(
     @Req() req: RequestWithPassportUser,
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ) {
     await this.tokenService.setAuthCookies(res, req.user);
 

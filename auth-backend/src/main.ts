@@ -21,6 +21,9 @@ async function bootstrap() {
     origin: [clientOrigin],
     credentials: true,
     maxAge: 86400,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization'],
   });
 
   app.useGlobalFilters(new ApiExceptionFilter());

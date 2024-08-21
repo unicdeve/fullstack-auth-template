@@ -12,8 +12,8 @@ import {
   REFRESH_TOKEN_COOKIE_ID,
 } from 'utils/constants';
 import { JwtTokenPayload } from './auth.types';
-import { PrismaService } from 'libs/prisma/prisma.service';
 import { TokenService } from './services/token.service';
+import { AuthService } from './services/auth.service';
 
 type TokensType = {
   accessToken?: string | undefined;
@@ -24,9 +24,9 @@ type TokensType = {
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private tokenService: TokenService,
+    private authService: AuthService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private prisma: PrismaService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -47,6 +47,7 @@ export class JwtAuthGuard implements CanActivate {
       );
 
       request['user'] = payload;
+
       return true;
     } catch {
       // token is expired or signed with a different secret
@@ -70,11 +71,11 @@ export class JwtAuthGuard implements CanActivate {
      * You could decide not check the refreshTokenVersion, and in turn not query the User table at all
      * Thereby, relying on the fact that your refreshToken is valid, just sign new ones, no problem, ahaha
      */
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: data.userId,
-      },
-    });
+    const user = await this.authService.findUserById(data.userId);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
     // Set new tokens since accessToken has expired
     await this.tokenService.setAuthCookies(response, user);

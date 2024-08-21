@@ -43,7 +43,7 @@ export class GoogleAuthContoller {
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(
     @Req() req: RequestWithPassportUser,
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ) {
     await this.tokenService.setAuthCookies(res, req.user);
 

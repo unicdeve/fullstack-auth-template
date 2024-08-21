@@ -85,10 +85,10 @@ export class AuthService {
 
   /**
    * @description creates new user in DB
-   * @param SignInDto
-   * @returns Promise<AuthTokens>
+   * @param userId
+   * @returns Promise<User>
    */
-  async getAuthenticatedUser(userId: string) {
+  async findUserById(userId: string) {
     try {
       const user = await this.prismaService.user.findUnique({
         where: {
