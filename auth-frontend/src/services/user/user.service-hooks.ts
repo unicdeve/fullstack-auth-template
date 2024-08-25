@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import {
 	loginFormSchema,
 	LoginFormType,
+	magicLinkFormSchema,
+	MagicLinkFormType,
 	signupFormSchema,
 	SignupFormType,
 	UserServices,
@@ -13,6 +15,7 @@ import { BASE_API_URL } from '@/lib/constants';
 import { useToast } from '@/components/ui/use-toast';
 import { AxiosError } from 'axios';
 import { QueryKeyEnums } from '../service.type';
+import { useNavigate } from 'react-router-dom';
 
 export const useMe = () => {
 	const { data, isPending } = useQuery({
@@ -22,7 +25,7 @@ export const useMe = () => {
 		retry: 0,
 	});
 
-	return { data: data?.data.data, isLoading: isPending };
+	return { data: data?.data?.data, isLoading: isPending };
 };
 
 export const useLogin = () => {
@@ -139,4 +142,68 @@ export const useSignup = () => {
 		signUpWithOauth,
 		isLoading: form.formState.isSubmitting || isPending,
 	};
+};
+
+export const useMagicLink = () => {
+	const { toast } = useToast();
+
+	const { mutate, isPending } = useMutation({
+		mutationFn: UserServices.requestMagicLink,
+		onSuccess: (_data, variables) => {
+			toast({
+				description: `Your sign-in link has been sent to ${variables.email}`,
+			});
+		},
+		onError: (e: AxiosError<{ message: string }>) => {
+			toast({
+				variant: 'destructive',
+				description: e.response?.data.message,
+			});
+		},
+	});
+
+	const form = useForm<MagicLinkFormType>({
+		defaultValues: {
+			email: 'taiwo.ogunola.dev@email.com',
+		},
+		resolver: zodResolver(magicLinkFormSchema),
+	});
+
+	const onSubmit = async (data: MagicLinkFormType) => {
+		mutate(data);
+	};
+
+	return {
+		onSubmit: form.handleSubmit(onSubmit),
+		form,
+		isLoading: form.formState.isSubmitting || isPending,
+	};
+};
+
+export const useVerfiyMagicLink = () => {
+	const queryClient = useQueryClient();
+	const { toast } = useToast();
+	const navigate = useNavigate();
+
+	const { mutate, isPending } = useMutation({
+		mutationFn: UserServices.verifyMagicLinkToken,
+		onSuccess: () => {
+			toast({
+				description: `You are signed in successfully`,
+			});
+
+			queryClient.invalidateQueries({
+				queryKey: [QueryKeyEnums.ME],
+			});
+		},
+		onError: (e: AxiosError<{ message: string }>) => {
+			toast({
+				variant: 'destructive',
+				description: e.response?.data.message,
+			});
+			navigate('/login', { replace: true });
+		},
+	});
+
+	return { verify: mutate, isLoading: isPending };
 };

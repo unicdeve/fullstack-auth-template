@@ -4,6 +4,7 @@ import SignupPage from './sign-up';
 import { LoginPage } from './login';
 import { useAuth } from '@/hooks/use-auth.hook';
 import { PropsWithChildren } from 'react';
+import { VerifyMagicLink } from './magic-link-verify';
 
 // You can create similar comp for protected routes
 const PublicRoute = ({ children }: PropsWithChildren) => {
@@ -27,6 +28,10 @@ export function AppRoutes() {
 			<Route
 				path='/sign-up'
 				element={<PublicRoute children={<SignupPage />} />}
+			/>
+			<Route
+				path='/magic-link/verify'
+				element={<PublicRoute children={<VerifyMagicLink />} />}
 			/>
 		</Routes>
 	);

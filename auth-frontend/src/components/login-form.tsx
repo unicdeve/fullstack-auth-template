@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/use-auth.hook';
 import { FacebookIcon } from './icons/facebook-icon';
 import { GithubIcon } from './icons/github-icon';
 import { GoogleIcon } from './icons/google-icon';
+import { MagicLinkForm } from './magic-link-form';
 
 export function LoginForm() {
 	const {
@@ -124,6 +125,19 @@ export function LoginForm() {
 					Facebook
 				</Button>
 			</div>
+
+			<div className='relative'>
+				<div className='absolute inset-0 flex items-center'>
+					<span className='w-full border-t border-muted' />
+				</div>
+				<div className='relative flex justify-center text-sm'>
+					<span className='bg-background px-2 text-muted-foreground'>
+						Or continue with magic link
+					</span>
+				</div>
+			</div>
+
+			<MagicLinkForm />
 		</div>
 	);
 }

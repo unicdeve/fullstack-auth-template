@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Res, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { MagicLinkTokenDto } from 'auth/dto/magic-link-token.dto';
 import { AuthService } from 'auth/services/auth.service';
 import { EmailService } from 'auth/services/email.service';
 import { TokenService } from 'auth/services/token.service';
@@ -38,7 +39,7 @@ export class MagicLinkController {
 
   @Get('verify')
   async verifyMagicLink(
-    @Query('token') token: string,
+    @Query() { token }: MagicLinkTokenDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const payload = await this.tokenService.verifyMagicLinkToken(token);

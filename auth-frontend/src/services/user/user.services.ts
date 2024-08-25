@@ -27,6 +27,12 @@ export const loginFormSchema = z.object({
 
 export type LoginFormType = z.infer<typeof loginFormSchema>;
 
+export const magicLinkFormSchema = z.object({
+	email: validateEmail,
+});
+
+export type MagicLinkFormType = z.infer<typeof magicLinkFormSchema>;
+
 type RequestType<T> = {
 	status: 'success';
 	data: T;
@@ -69,5 +75,18 @@ export const UserServices = {
 				Accept: 'application/json',
 			},
 		});
+	},
+
+	requestMagicLink: async function (data: MagicLinkFormType) {
+		return await axios.post(`/magic-link/request`, data, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+	},
+
+	verifyMagicLinkToken: async function (token: string) {
+		return await axios.get(`/magic-link/verify?token=${token}`);
 	},
 };
