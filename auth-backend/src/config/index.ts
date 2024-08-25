@@ -5,44 +5,6 @@ export const config = () => {
   assertDefined(process.env.DATABASE_URL, 'DATABASE_URL is missing!');
   assertDefined(process.env.JWT_ISSUER, 'JWT_ISSUER is missing!');
   assertDefined(process.env.JWT_AUDIENCE, 'JWT_AUDIENCE is missing!');
-  assertDefined(
-    process.env.GOOGLE_OAUTH_SECRET,
-    'GOOGLE_OAUTH_SECRET is missing!',
-  );
-  assertDefined(
-    process.env.GOOGLE_OAUTH_CLIENT_ID,
-    'GOOGLE_OAUTH_CLIENT_ID is missing!',
-  );
-  assertDefined(
-    process.env.GOOGLE_OAUTH_CALLBACK_URL,
-    'GOOGLE_OAUTH_CALLBACK_URL is missing!',
-  );
-
-  assertDefined(
-    process.env.FACEBOOK_OAUTH_SECRET,
-    'FACEBOOK_OAUTH_SECRET is missing!',
-  );
-  assertDefined(
-    process.env.FACEBOOK_OAUTH_CLIENT_ID,
-    'FACEBOOK_OAUTH_CLIENT_ID is missing!',
-  );
-  assertDefined(
-    process.env.FACEBOOK_OAUTH_CALLBACK_URL,
-    'FACEBOOK_OAUTH_CALLBACK_URL is missing!',
-  );
-
-  assertDefined(
-    process.env.GITHUB_OAUTH_SECRET,
-    'GITHUB_OAUTH_SECRET is missing!',
-  );
-  assertDefined(
-    process.env.GITHUB_OAUTH_CLIENT_ID,
-    'GITHUB_OAUTH_CLIENT_ID is missing!',
-  );
-  assertDefined(
-    process.env.GITHUB_OAUTH_CALLBACK_URL,
-    'GITHUB_OAUTH_CALLBACK_URL is missing!',
-  );
 
   if (IS_PROD) {
     assertDefined(
@@ -117,7 +79,7 @@ export const config = () => {
     github_oauth_secret: process.env.GITHUB_OAUTH_SECRET,
     github_oauth_client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
     github_oauth_callback_url: process.env.GITHUB_OAUTH_CALLBACK_URL,
-    foontend_client_origin:
+    frontend_client_origin:
       process.env.FRONTEND_CLIENT_ORIGIN || 'http://localhost:3100',
   };
 };

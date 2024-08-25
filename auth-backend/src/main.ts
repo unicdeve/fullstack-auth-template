@@ -15,7 +15,7 @@ async function bootstrap() {
   // You can add more secrets for rotations
   app.use(cookieParser([cookieSecret]));
 
-  const clientOrigin = configService.get<string>('foontend_client_origin');
+  const clientOrigin = configService.get<string>('frontend_client_origin');
 
   app.enableCors({
     origin: [clientOrigin],

@@ -12,9 +12,11 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     private readonly authService: AuthService,
   ) {
     super({
-      clientID: configService.get<string>('facebook_oauth_client_id'),
-      clientSecret: configService.get<string>('facebook_oauth_secret'),
-      callbackURL: configService.get<string>('facebook_oauth_callback_url'),
+      clientID: configService.getOrThrow<string>('facebook_oauth_client_id'),
+      clientSecret: configService.getOrThrow<string>('facebook_oauth_secret'),
+      callbackURL: configService.getOrThrow<string>(
+        'facebook_oauth_callback_url',
+      ),
       scope: 'email',
       profileFields: ['emails', 'name'],
     });

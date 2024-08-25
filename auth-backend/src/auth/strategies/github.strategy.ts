@@ -12,9 +12,11 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     private readonly authService: AuthService,
   ) {
     super({
-      clientID: configService.get<string>('github_oauth_client_id'),
-      clientSecret: configService.get<string>('github_oauth_secret'),
-      callbackURL: configService.get<string>('github_oauth_callback_url'),
+      clientID: configService.getOrThrow<string>('github_oauth_client_id'),
+      clientSecret: configService.getOrThrow<string>('github_oauth_secret'),
+      callbackURL: configService.getOrThrow<string>(
+        'github_oauth_callback_url',
+      ),
       scope: ['email', 'profile'],
     });
   }

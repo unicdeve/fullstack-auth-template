@@ -50,7 +50,7 @@ export class GoogleAuthContoller {
     res
       .status(HttpStatus.OK)
       .redirect(
-        this.configService.getOrThrow<string>('foontend_client_origin'),
+        this.configService.getOrThrow<string>('frontend_client_origin'),
       );
   }
 }
