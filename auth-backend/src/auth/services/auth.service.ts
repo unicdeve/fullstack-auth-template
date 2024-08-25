@@ -84,7 +84,7 @@ export class AuthService {
   }
 
   /**
-   * @description creates new user in DB
+   * @description find a user by id
    * @param userId
    * @returns Promise<User>
    */
@@ -93,6 +93,27 @@ export class AuthService {
       const user = await this.prismaService.user.findUnique({
         where: {
           id: userId,
+        },
+      });
+
+      delete user.password;
+
+      return user;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * @description finds a user by email
+   * @param email
+   * @returns Promise<User>
+   */
+  async findUserByEmail(email: string) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          email,
         },
       });
 

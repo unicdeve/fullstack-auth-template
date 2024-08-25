@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
 import { User } from '@prisma/client';
@@ -117,5 +117,33 @@ export class TokenService {
     res
       .clearCookie(ACCESS_TOKEN_COOKIE_ID)
       .clearCookie(REFRESH_TOKEN_COOKIE_ID);
+  }
+
+  async generateMagicLinkToken(user: User): Promise<string> {
+    const signOptions: JwtSignOptions = {
+      ...this.getBaseOptions(),
+      expiresIn: this.configService.getOrThrow<string>('magic_link_expires_in'),
+      secret: this.configService.getOrThrow<string>('magic_link_secret'),
+      subject: user.id,
+    };
+
+    return this.jwt.signAsync(
+      {
+        userId: user.id,
+      },
+      signOptions,
+    );
+  }
+
+  async verifyMagicLinkToken(token: string): Promise<{ userId: string }> {
+    try {
+      const payload = await this.jwt.verifyAsync(token, {
+        secret: this.configService.getOrThrow<string>('magic_link_secret'),
+      });
+
+      return payload;
+    } catch (err) {
+      throw new UnauthorizedException('Invalid or expired magic link');
+    }
   }
 }

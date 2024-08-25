@@ -13,6 +13,8 @@ import { FacebookAuthContoller } from './controllers/facebook-auth.controller';
 import { GithubStrategy } from './strategies/github.strategy';
 import { GithubAuthContoller } from './controllers/github-auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
+import { MagicLinkController } from './controllers/magic-link-auth.controller';
+import { EmailService } from './services/email.service';
 
 @Module({
   imports: [
@@ -35,10 +37,13 @@ import { LocalStrategy } from './strategies/local.strategy';
     GoogleAuthContoller,
     FacebookAuthContoller,
     GithubAuthContoller,
+
+    MagicLinkController,
   ],
   providers: [
     AuthService,
     TokenService,
+    EmailService,
     GoogleStrategy,
     FacebookStrategy,
     GithubStrategy,

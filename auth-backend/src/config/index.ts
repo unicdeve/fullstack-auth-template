@@ -81,6 +81,12 @@ export const config = () => {
     github_oauth_callback_url: process.env.GITHUB_OAUTH_CALLBACK_URL,
     frontend_client_origin:
       process.env.FRONTEND_CLIENT_ORIGIN || 'http://localhost:3100',
+    email_user: process.env.EMAIL_USER,
+    email_pass: process.env.EMAIL_PASS,
+    magic_link_secret:
+      process.env.MAGIC_LINK_SECRET ||
+      'make sure to pass some really long secret key for magic link token gen',
+    magic_link_expires_in: process.env.MAGIC_LINK_EXPIRES_IN || '5min',
   };
 };
 
