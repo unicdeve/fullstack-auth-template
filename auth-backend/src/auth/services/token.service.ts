@@ -146,4 +146,40 @@ export class TokenService {
       throw new UnauthorizedException('Invalid or expired magic link');
     }
   }
+
+  async generateResetPasswordLinkToken(user: User): Promise<string> {
+    const signOptions: JwtSignOptions = {
+      ...this.getBaseOptions(),
+      expiresIn: this.configService.getOrThrow<string>(
+        'reset_password_link_expires_in',
+      ),
+      secret: this.configService.getOrThrow<string>(
+        'reset_password_link_secret',
+      ),
+      subject: user.id,
+    };
+
+    return this.jwt.signAsync(
+      {
+        userId: user.id,
+      },
+      signOptions,
+    );
+  }
+
+  async verifyResetPasswordLinkToken(
+    token: string,
+  ): Promise<{ userId: string }> {
+    try {
+      const payload = await this.jwt.verifyAsync(token, {
+        secret: this.configService.getOrThrow<string>(
+          'reset_password_link_secret',
+        ),
+      });
+
+      return payload;
+    } catch (err) {
+      throw new UnauthorizedException('Invalid or expired reset password link');
+    }
+  }
 }

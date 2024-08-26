@@ -28,4 +28,16 @@ export class EmailService {
 
     await this.transporter.sendMail(mailOptions);
   }
+
+  async sendForgetPasswordLink(email: string, link: string): Promise<void> {
+    const mailOptions = {
+      from: this.configService.getOrThrow<string>('email_user'),
+      to: email,
+      subject: 'Auth Template - Reset password',
+      text: `Click on this link to reset password: ${link}`,
+      html: `<a href="${link}">Click here to reset password</a>`,
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
 }

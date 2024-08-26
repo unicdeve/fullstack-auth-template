@@ -87,6 +87,11 @@ export const config = () => {
       process.env.MAGIC_LINK_SECRET ||
       'make sure to pass some really long secret key for magic link token gen',
     magic_link_expires_in: process.env.MAGIC_LINK_EXPIRES_IN || '5min',
+    reset_password_link_secret:
+      process.env.RESET_PASSWORD_LINK_SECRET ||
+      'make sure to pass some really long secret key for magic link token gen',
+    reset_password_link_expires_in:
+      process.env.RESET_PASSWORD_LINK_EXPIRES_IN || '5min',
   };
 };
 

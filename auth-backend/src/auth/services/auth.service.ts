@@ -8,7 +8,11 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { BadRequestError } from 'libs/errors/bad-request.error';
 import { SignInDto } from 'auth/dto/signin.dto';
 import { User } from '@prisma/client';
-import { OAuthProvider, OAuthUserType } from 'auth/auth.types';
+import {
+  OAuthProvider,
+  OAuthUserType,
+  UpdateUserPasswordType,
+} from 'auth/auth.types';
 
 @Injectable()
 export class AuthService {
@@ -172,6 +176,39 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  /**
+   * @description creates new user in DB
+   * @param SignUpDto
+   * @returns Promise<AuthTokens>
+   */
+  async updateUserPassword({ newPassword, userId }: UpdateUserPasswordType) {
+    const user = await this.findUserById(userId);
+
+    if (!user) throw BadRequestError('user', 'User not found');
+
+    const salt = await genSalt(
+      this.configService.getOrThrow<number>('password_salt'),
+    );
+    const hashedPassword = await hash(newPassword, salt);
+
+    try {
+      await this.prismaService.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      delete user.password;
+
+      return user;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
   /**

@@ -29,3 +29,8 @@ export type VerifyCallback = (
   user?: Express.User | false,
   info?: object,
 ) => void;
+
+export type UpdateUserPasswordType = {
+  userId: string;
+  newPassword: string;
+};

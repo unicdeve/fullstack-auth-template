@@ -15,6 +15,7 @@ import { GithubAuthContoller } from './controllers/github-auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 import { MagicLinkController } from './controllers/magic-link-auth.controller';
 import { EmailService } from './services/email.service';
+import { ForgetPasswordAuthController } from './controllers/forget-password-auth.controller';
 
 @Module({
   imports: [
@@ -37,8 +38,8 @@ import { EmailService } from './services/email.service';
     GoogleAuthContoller,
     FacebookAuthContoller,
     GithubAuthContoller,
-
     MagicLinkController,
+    ForgetPasswordAuthController,
   ],
   providers: [
     AuthService,
