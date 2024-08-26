@@ -1,5 +1,6 @@
 import {
 	confirmPassword,
+	validateConfirmNewPassword,
 	validateConfirmPassword,
 	validateEmail,
 	validateName,
@@ -32,6 +33,21 @@ export const magicLinkFormSchema = z.object({
 });
 
 export type MagicLinkFormType = z.infer<typeof magicLinkFormSchema>;
+
+export const forgetPasswordFormSchema = z.object({
+	email: validateEmail,
+});
+
+export type ForgetPasswordFormType = z.infer<typeof forgetPasswordFormSchema>;
+
+export const resetPasswordFormSchema = z
+	.object({
+		newPassword: validatePassword,
+		confirmPassword,
+	})
+	.superRefine(validateConfirmNewPassword);
+
+export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;
 
 type RequestType<T> = {
 	status: 'success';
@@ -88,5 +104,23 @@ export const UserServices = {
 
 	verifyMagicLinkToken: async function (token: string) {
 		return await axios.get(`/magic-link/verify?token=${token}`);
+	},
+
+	forgetPassword: async function (data: ForgetPasswordFormType) {
+		return await axios.post(`/forget-password`, data, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
+	},
+
+	resetPassword: async function (data: { newPassword: string; token: string }) {
+		return await axios.post(`/forget-password/reset`, data, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+		});
 	},
 };

@@ -31,3 +31,7 @@ npm run prisma:migration:save
 
 # generate your Prisma client
 npm run prisma:generate
+
+# Install Nodemailer
+npm install nodemailer
+

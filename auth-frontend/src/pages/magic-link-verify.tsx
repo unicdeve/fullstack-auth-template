@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-export const VerifyMagicLink = () => {
+export const VerifyMagicLinkPage = () => {
 	const [searchParams] = useSearchParams();
 
 	const token = searchParams.get('token') || '';

@@ -19,11 +19,29 @@ type PasswordsType = {
 	confirmPassword: string;
 };
 
+type NewPasswordsType = {
+	newPassword: string;
+	confirmPassword: string;
+};
+
 export const validateConfirmPassword = (
 	{ confirmPassword, password }: PasswordsType,
 	ctx: z.RefinementCtx
 ) => {
 	if (confirmPassword !== password) {
+		ctx.addIssue({
+			code: 'custom',
+			message: 'The passwords did not match',
+			path: ['confirmPassword'],
+		});
+	}
+};
+
+export const validateConfirmNewPassword = (
+	{ confirmPassword, newPassword }: NewPasswordsType,
+	ctx: z.RefinementCtx
+) => {
+	if (confirmPassword !== newPassword) {
 		ctx.addIssue({
 			code: 'custom',
 			message: 'The passwords did not match',

@@ -1,10 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { HomePage } from './home';
-import SignupPage from './sign-up';
+import { SignupPage } from './sign-up';
 import { LoginPage } from './login';
 import { useAuth } from '@/hooks/use-auth.hook';
 import { PropsWithChildren } from 'react';
-import { VerifyMagicLink } from './magic-link-verify';
+import { VerifyMagicLinkPage } from './magic-link-verify';
+import { ForgetPasswordPage } from './forget-password';
+import { ResetPasswordPage } from './forget-password/reset-password';
 
 // You can create similar comp for protected routes
 const PublicRoute = ({ children }: PropsWithChildren) => {
@@ -31,7 +33,15 @@ export function AppRoutes() {
 			/>
 			<Route
 				path='/magic-link/verify'
-				element={<PublicRoute children={<VerifyMagicLink />} />}
+				element={<PublicRoute children={<VerifyMagicLinkPage />} />}
+			/>
+			<Route
+				path='/forget-password'
+				element={<PublicRoute children={<ForgetPasswordPage />} />}
+			/>
+			<Route
+				path='/forget-password/reset'
+				element={<PublicRoute children={<ResetPasswordPage />} />}
 			/>
 		</Routes>
 	);

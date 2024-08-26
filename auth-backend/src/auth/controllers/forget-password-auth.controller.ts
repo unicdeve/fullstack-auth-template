@@ -15,6 +15,11 @@ export class ForgetPasswordAuthController {
     private readonly emailService: EmailService,
   ) {}
 
+  /**
+   * @description request for reset password link
+   * @param email
+   * @returns Response
+   */
   @Post()
   async requestResetPasswordLink(@Body('email') email: string) {
     const user = await this.authService.findUserByEmail(email);
@@ -38,6 +43,11 @@ export class ForgetPasswordAuthController {
     };
   }
 
+  /**
+   * @description sets new password
+   * @param ResetPasswordDto
+   * @returns Response
+   */
   @Post('reset')
   async resetPassword(
     @Body() body: ResetPasswordDto,

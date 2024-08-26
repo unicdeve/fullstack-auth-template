@@ -26,6 +26,12 @@ export function LoginForm() {
 		isLoading,
 	} = useAuth();
 
+	const emailValue = form.getValues('email');
+
+	const forgetPasswordLink = emailValue
+		? `/forget-password?email=${emailValue}`
+		: '/forget-password';
+
 	return (
 		<div className='mx-auto w-full max-w-md space-y-8'>
 			<Form {...form}>
@@ -78,7 +84,10 @@ export function LoginForm() {
 							</Label>
 						</div>
 						<div className='text-sm'>
-							<Link to='#' className='font-medium text-primary hover:underline'>
+							<Link
+								to={forgetPasswordLink}
+								className='font-medium text-primary hover:underline'
+							>
 								Forgot your password?
 							</Link>
 						</div>

@@ -37,7 +37,7 @@ export class FacebookAuthContoller {
   /**
    * @description facebook oauth redirect after client grant
    * @param req
-   * @returns Promise
+   * @returns Response
    */
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))

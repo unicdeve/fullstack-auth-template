@@ -3,10 +3,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import {
+	forgetPasswordFormSchema,
+	ForgetPasswordFormType,
 	loginFormSchema,
 	LoginFormType,
 	magicLinkFormSchema,
 	MagicLinkFormType,
+	resetPasswordFormSchema,
+	ResetPasswordFormType,
 	signupFormSchema,
 	SignupFormType,
 	UserServices,
@@ -206,4 +210,83 @@ export const useVerfiyMagicLink = () => {
 	});
 
 	return { verify: mutate, isLoading: isPending };
+};
+
+export const useForgetPassword = (email = '') => {
+	const { toast } = useToast();
+
+	const { mutate, isPending } = useMutation({
+		mutationFn: UserServices.forgetPassword,
+		onSuccess: (_data, variables) => {
+			toast({
+				description: `Your reset password link has been sent to ${variables.email}`,
+			});
+		},
+		onError: (e: AxiosError<{ message: string }>) => {
+			toast({
+				variant: 'destructive',
+				description: e.response?.data.message,
+			});
+		},
+	});
+
+	const form = useForm<ForgetPasswordFormType>({
+		defaultValues: {
+			email,
+		},
+		resolver: zodResolver(forgetPasswordFormSchema),
+	});
+
+	const onSubmit = async (data: ForgetPasswordFormType) => {
+		mutate(data);
+	};
+
+	return {
+		onSubmit: form.handleSubmit(onSubmit),
+		form,
+		isLoading: form.formState.isSubmitting || isPending,
+	};
+};
+
+export const useResetPassword = (token: string) => {
+	const navigate = useNavigate();
+	const { toast } = useToast();
+
+	const { mutate, isPending } = useMutation({
+		mutationFn: UserServices.resetPassword,
+		onSuccess: () => {
+			toast({
+				description:
+					'You have successfully set new password. Login with your new password.',
+			});
+			navigate('/login', { replace: true });
+		},
+		onError: (e: AxiosError<{ message: string }>) => {
+			toast({
+				variant: 'destructive',
+				description: e.response?.data.message,
+			});
+		},
+	});
+
+	const form = useForm<ResetPasswordFormType>({
+		defaultValues: {
+			newPassword: '',
+			confirmPassword: '',
+		},
+		resolver: zodResolver(resetPasswordFormSchema),
+	});
+
+	const onSubmit = async (data: ResetPasswordFormType) => {
+		mutate({
+			newPassword: data.newPassword,
+			token,
+		});
+	};
+
+	return {
+		onSubmit: form.handleSubmit(onSubmit),
+		form,
+		isLoading: form.formState.isSubmitting || isPending,
+	};
 };
