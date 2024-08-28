@@ -9,6 +9,7 @@ import {
   ACCESS_TOKEN_COOKIE_ID,
   REFRESH_TOKEN_COOKIE_ID,
 } from 'utils/constants';
+import { SecretKeyId, SecretService } from 'libs/secret/secret.service';
 import { Response } from 'express';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class TokenService {
   constructor(
     private readonly jwt: JwtService,
     private configService: ConfigService,
+    private secretService: SecretService,
   ) {}
 
   private getBaseOptions(): JwtSignOptions {
@@ -29,21 +31,21 @@ export class TokenService {
   }
 
   /**
+   * Access token should be short live
+   * Make sure to set short expiration time, like 5mins, 10mins, 15mins, etc, depending on your application
    * @description generates access token
    * @param User
    * @returns Promise<string>
    */
   private async generateAccessToken(user: User): Promise<string> {
-    /**
-     * Access token should be short live
-     * Make sure to set short expiration time, like 5mins, 10mins, 15mins, etc, depending on your application
-     */
+    const currentSecret = this.secretService.getCurrent('access_token');
+
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
       expiresIn: this.configService.getOrThrow<string>(
-        'access_token_expires_in',
+        'access_token.expires_in',
       ),
-      secret: this.configService.getOrThrow<string>('access_token_secret'),
+      secret: currentSecret,
       subject: user.id,
     };
 
@@ -56,21 +58,21 @@ export class TokenService {
   }
 
   /**
+   * Refresh token can be long live
+   * Could be 3mon, 6mon, 1yr, etc
    * @description generates refresh token
    * @param user
    * @returns Promise<string>
    */
   private async generateRefreshToken(user: User): Promise<string> {
-    /**
-     * Refresh token can be long live
-     * Could be 3mon, 6mon, 1yr, etc
-     */
+    const currentSecret = this.secretService.getCurrent('refresh_token');
+
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
       expiresIn: this.configService.getOrThrow<string>(
-        'refresh_token_expires_in',
+        'refresh_token.expires_in',
       ),
-      secret: this.configService.getOrThrow<string>('refresh_token_secret'),
+      secret: currentSecret,
       subject: user.id,
     };
 
@@ -120,10 +122,12 @@ export class TokenService {
   }
 
   async generateMagicLinkToken(user: User): Promise<string> {
+    const currentSecret = this.secretService.getCurrent('magic_link');
+
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
-      expiresIn: this.configService.getOrThrow<string>('magic_link_expires_in'),
-      secret: this.configService.getOrThrow<string>('magic_link_secret'),
+      expiresIn: this.configService.getOrThrow<string>('magic_link.expires_in'),
+      secret: currentSecret,
       subject: user.id,
     };
 
@@ -135,10 +139,11 @@ export class TokenService {
     );
   }
 
-  async verifyMagicLinkToken(token: string): Promise<{ userId: string }> {
+  async verifyMagicLinkToken(token: string) {
     try {
-      const payload = await this.jwt.verifyAsync(token, {
-        secret: this.configService.getOrThrow<string>('magic_link_secret'),
+      const payload = await this.verifyToken<{ userId: string }>({
+        token,
+        keyId: 'magic_link',
       });
 
       return payload;
@@ -148,14 +153,13 @@ export class TokenService {
   }
 
   async generateResetPasswordLinkToken(user: User): Promise<string> {
+    const currentSecret = this.secretService.getCurrent('reset_password_link');
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
       expiresIn: this.configService.getOrThrow<string>(
-        'reset_password_link_expires_in',
+        'reset_password_link.expires_in',
       ),
-      secret: this.configService.getOrThrow<string>(
-        'reset_password_link_secret',
-      ),
+      secret: currentSecret,
       subject: user.id,
     };
 
@@ -167,19 +171,39 @@ export class TokenService {
     );
   }
 
-  async verifyResetPasswordLinkToken(
-    token: string,
-  ): Promise<{ userId: string }> {
+  async verifyResetPasswordLinkToken(token: string) {
     try {
-      const payload = await this.jwt.verifyAsync(token, {
-        secret: this.configService.getOrThrow<string>(
-          'reset_password_link_secret',
-        ),
+      const payload = await this.verifyToken<{ userId: string }>({
+        token,
+        keyId: 'reset_password_link',
       });
 
       return payload;
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired reset password link');
+    }
+  }
+
+  async verifyToken<T>(props: {
+    keyId: SecretKeyId;
+    token: string;
+  }): Promise<T> {
+    const secrets = this.secretService.get(props.keyId);
+    // Try verifying first with current secret
+    try {
+      return this.jwt.verifyAsync(props.token, {
+        secret: secrets.current,
+      }) as T;
+    } catch {
+      // Token could be expired/malform/signed with other keys
+    }
+
+    try {
+      return this.jwt.verifyAsync(props.token, {
+        secret: secrets.previous,
+      }) as T;
+    } catch (e) {
+      throw new Error('Token is expired or malformed');
     }
   }
 }

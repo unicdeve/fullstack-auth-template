@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'libs/prisma/prisma.module';
+import { SecretModule } from 'libs/secret/secret.module';
 
 import { LocalAuthContoller } from './controllers/local-auth.controller';
 import { AuthService } from './services/auth.service';
@@ -21,6 +22,7 @@ import { ForgetPasswordAuthController } from './controllers/forget-password-auth
   imports: [
     ConfigModule,
     PrismaModule,
+    SecretModule,
     JwtModule.registerAsync({
       global: true,
       imports: [ConfigModule],

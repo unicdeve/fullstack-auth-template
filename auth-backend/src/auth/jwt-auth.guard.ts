@@ -4,9 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { ConfigService } from '@nestjs/config';
 import {
   ACCESS_TOKEN_COOKIE_ID,
   REFRESH_TOKEN_COOKIE_ID,
@@ -25,8 +23,6 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private tokenService: TokenService,
     private authService: AuthService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -39,12 +35,10 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync<JwtTokenPayload>(
-        accessToken,
-        {
-          secret: this.configService.getOrThrow('access_token_secret'),
-        },
-      );
+      const payload = await this.tokenService.verifyToken<JwtTokenPayload>({
+        token: accessToken,
+        keyId: 'access_token',
+      });
 
       request['user'] = payload;
 
@@ -60,8 +54,9 @@ export class JwtAuthGuard implements CanActivate {
 
     let data: JwtTokenPayload;
     try {
-      data = await this.jwtService.verifyAsync<JwtTokenPayload>(refreshToken, {
-        secret: this.configService.getOrThrow('refresh_token_secret'),
+      data = await this.tokenService.verifyToken<JwtTokenPayload>({
+        token: refreshToken,
+        keyId: 'refresh_token',
       });
     } catch {
       throw new UnauthorizedException();

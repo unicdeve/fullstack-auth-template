@@ -10,12 +10,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const cookieSecret = configService.get<string>('cookie_secret');
+  const cookieSecret = configService.getOrThrow<string>('cookie.secret');
 
   // You can add more secrets for rotations
   app.use(cookieParser([cookieSecret]));
 
-  const clientOrigin = configService.get<string>('frontend_client_origin');
+  const clientOrigin = configService.getOrThrow<string>(
+    'frontend_client_origin',
+  );
 
   app.enableCors({
     origin: [clientOrigin],
