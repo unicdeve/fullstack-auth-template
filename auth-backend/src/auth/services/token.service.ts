@@ -38,7 +38,9 @@ export class TokenService {
    * @returns Promise<string>
    */
   private async generateAccessToken(user: User): Promise<string> {
-    const currentSecret = this.secretService.getCurrent('access_token');
+    const currentSecret = this.secretService.getCurrent(
+      SecretKeyId.AccessToken,
+    );
 
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
@@ -65,7 +67,9 @@ export class TokenService {
    * @returns Promise<string>
    */
   private async generateRefreshToken(user: User): Promise<string> {
-    const currentSecret = this.secretService.getCurrent('refresh_token');
+    const currentSecret = this.secretService.getCurrent(
+      SecretKeyId.RefreshToken,
+    );
 
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
@@ -122,7 +126,7 @@ export class TokenService {
   }
 
   async generateMagicLinkToken(user: User): Promise<string> {
-    const currentSecret = this.secretService.getCurrent('magic_link');
+    const currentSecret = this.secretService.getCurrent(SecretKeyId.MagicLink);
 
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
@@ -143,7 +147,7 @@ export class TokenService {
     try {
       const payload = await this.verifyToken<{ userId: string }>({
         token,
-        keyId: 'magic_link',
+        keyId: SecretKeyId.MagicLink,
       });
 
       return payload;
@@ -153,7 +157,9 @@ export class TokenService {
   }
 
   async generateResetPasswordLinkToken(user: User): Promise<string> {
-    const currentSecret = this.secretService.getCurrent('reset_password_link');
+    const currentSecret = this.secretService.getCurrent(
+      SecretKeyId.ResetPasswordLink,
+    );
     const signOptions: JwtSignOptions = {
       ...this.getBaseOptions(),
       expiresIn: this.configService.getOrThrow<string>(
@@ -175,7 +181,7 @@ export class TokenService {
     try {
       const payload = await this.verifyToken<{ userId: string }>({
         token,
-        keyId: 'reset_password_link',
+        keyId: SecretKeyId.ResetPasswordLink,
       });
 
       return payload;

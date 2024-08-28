@@ -12,6 +12,7 @@ import {
 import { JwtTokenPayload } from './auth.types';
 import { TokenService } from './services/token.service';
 import { AuthService } from './services/auth.service';
+import { SecretKeyId } from 'libs/secret/secret.service';
 
 type TokensType = {
   accessToken?: string | undefined;
@@ -37,7 +38,7 @@ export class JwtAuthGuard implements CanActivate {
     try {
       const payload = await this.tokenService.verifyToken<JwtTokenPayload>({
         token: accessToken,
-        keyId: 'access_token',
+        keyId: SecretKeyId.AccessToken,
       });
 
       request['user'] = payload;
@@ -56,7 +57,7 @@ export class JwtAuthGuard implements CanActivate {
     try {
       data = await this.tokenService.verifyToken<JwtTokenPayload>({
         token: refreshToken,
-        keyId: 'refresh_token',
+        keyId: SecretKeyId.RefreshToken,
       });
     } catch {
       throw new UnauthorizedException();
