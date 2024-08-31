@@ -1,6 +1,9 @@
 import { Controller, Post, Body, Res, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MagicLinkTokenDto } from 'auth/dto/magic-link-token.dto';
+import {
+  MagicLinkRequestDto,
+  MagicLinkTokenDto,
+} from 'auth/dto/magic-link.dto';
 import { AuthService } from 'auth/services/auth.service';
 import { EmailService } from 'auth/services/email.service';
 import { TokenService } from 'auth/services/token.service';
@@ -17,7 +20,7 @@ export class MagicLinkController {
   ) {}
 
   @Post('request')
-  async requestMagicLink(@Body('email') email: string) {
+  async requestMagicLink(@Body() { email }: MagicLinkRequestDto) {
     const user = await this.authService.findUserByEmail(email);
 
     if (!user) {

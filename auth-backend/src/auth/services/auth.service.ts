@@ -17,8 +17,8 @@ import {
 @Injectable()
 export class AuthService {
   constructor(
-    private prismaService: PrismaService,
-    private configService: ConfigService,
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**

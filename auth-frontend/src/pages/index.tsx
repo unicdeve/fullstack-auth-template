@@ -10,21 +10,21 @@ import { ResetPasswordPage } from './forget-password/reset-password';
 
 // You can create similar comp for protected routes
 const PublicRoute = ({ children }: PropsWithChildren) => {
-	const { user } = useAuth();
+	const { user, isLoading } = useAuth();
 
-	if (user) return <Navigate to='/' />;
+	if (user && !isLoading) return <Navigate to='/' />;
 
 	return children;
 };
 
 export function AppRoutes() {
-	const { user } = useAuth();
+	const { user, isLoading } = useAuth();
 
 	return (
 		<Routes>
 			<Route
 				path='/'
-				element={user ? <HomePage /> : <Navigate to='/login' />}
+				element={user && !isLoading ? <HomePage /> : <Navigate to='/login' />}
 			/>
 			<Route path='/login' element={<PublicRoute children={<LoginPage />} />} />
 			<Route

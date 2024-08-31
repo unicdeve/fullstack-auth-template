@@ -16,8 +16,8 @@ import { Response } from 'express';
 export class TokenService {
   constructor(
     private readonly jwt: JwtService,
-    private configService: ConfigService,
-    private secretService: SecretService,
+    private readonly configService: ConfigService,
+    private readonly secretService: SecretService,
   ) {}
 
   private getBaseOptions(): JwtSignOptions {
