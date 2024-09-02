@@ -3,6 +3,7 @@ import { Request } from 'express';
 
 export type JwtTokenPayload = {
   userId: string;
+  authTokenVersion: number | null | undefined;
 };
 
 export type OAuthProvider = 'google' | 'facebook' | 'github';

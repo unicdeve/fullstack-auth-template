@@ -71,7 +71,7 @@ export class LocalAuthContoller {
    * @returns Promise<any>
    */
   @UseGuards(JwtAuthGuard)
-  @Get('/me')
+  @Get('me')
   public async getUser(@Req() req: RequestWithAuthUser) {
     const userId = req?.user?.userId || '';
 
@@ -90,9 +90,33 @@ export class LocalAuthContoller {
    * @returns Promise<any>
    */
   @UseGuards(JwtAuthGuard)
-  @Delete('/logout')
+  @Delete('logout')
   public async logout(@Res({ passthrough: true }) res: Response) {
     this.tokenService.deleteAuthCookies(res);
+
+    return {
+      status: 'success',
+      data: null,
+      meta: null,
+    };
+  }
+
+  /**
+   * @description This doesn't log out all user session immediately;
+   * but it gracefully logs out all the user's sessions by changing the `authTokenVersion`
+   * thereby stopping the system from issuing new accessToken and refreshToken
+   * @param req.authorization
+   * @returns Promise<Res>
+   */
+  @UseGuards(JwtAuthGuard)
+  @Delete('logout/all')
+  public async logoutAll(
+    @Req() req: RequestWithAuthUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    this.tokenService.deleteAuthCookies(res);
+
+    await this.authService.incrementUserAuthTokenVersion(req.user.userId);
 
     return {
       status: 'success',

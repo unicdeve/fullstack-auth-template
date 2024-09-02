@@ -97,6 +97,28 @@ export const useLogout = () => {
 	};
 };
 
+export const useLogoutAll = () => {
+	const queryClient = useQueryClient();
+	const { toast } = useToast();
+
+	const { mutate } = useMutation({
+		mutationFn: UserServices.logoutAll,
+		onSuccess: () => {
+			queryClient.removeQueries();
+		},
+		onError: (e: AxiosError<{ message: string }>) => {
+			toast({
+				variant: 'destructive',
+				description: e.response?.data.message,
+			});
+		},
+	});
+
+	return {
+		logoutAll: mutate,
+	};
+};
+
 export const useSignup = () => {
 	const queryClient = useQueryClient();
 	const { toast } = useToast();

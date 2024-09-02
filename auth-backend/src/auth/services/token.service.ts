@@ -54,6 +54,7 @@ export class TokenService {
     return this.jwt.signAsync(
       {
         userId: user.id,
+        authTokenVersion: user.authTokenVersion,
       },
       signOptions,
     );
@@ -83,6 +84,7 @@ export class TokenService {
     return await this.jwt.signAsync(
       {
         userId: user.id,
+        authTokenVersion: user.authTokenVersion,
       },
       signOptions,
     );

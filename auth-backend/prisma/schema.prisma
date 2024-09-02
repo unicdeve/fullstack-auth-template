@@ -15,12 +15,13 @@ datasource db {
 
 // --------------- User model start --------------------
 model User {
-  id         String  @id @default(cuid())
-  email      String  @unique
-  facebookId String? @unique
-  googleId   String? @unique
-  githubId   String? @unique
-  password   String?
+  id               String  @id @default(cuid())
+  email            String  @unique
+  facebookId       String? @unique
+  googleId         String? @unique
+  githubId         String? @unique
+  password         String?
+  authTokenVersion Int     @default(1)
 
   // You can add other user data you want here
   firstName String?

@@ -84,6 +84,10 @@ export const UserServices = {
 		return await axios.delete(`/local-auth/logout`);
 	},
 
+	logoutAll: async function () {
+		return await axios.delete(`/local-auth/logout/all`);
+	},
+
 	signup: async function (data: Omit<SignupFormType, 'confirmPassword'>) {
 		return await axios.post(`/local-auth/signup-with-password`, data, {
 			headers: {
