@@ -19,6 +19,11 @@ async function bootstrap() {
 
   const fastifyInstance = app.getHttpAdapter().getInstance();
 
+  /**
+   * This is a workaround to add the setHeader and end methods to the reply object
+   * because passport.js is an express middleware and doesn't exactly work well with fastify
+   * TODO: We can remove this once nestjs has a support for the fastify-passport package
+   */
   fastifyInstance.addHook('onRequest', (request, reply, done) => {
     (reply as any).setHeader = function (key, value) {
       return this.raw.setHeader(key, value);
