@@ -10,7 +10,7 @@ import {
   REFRESH_TOKEN_COOKIE_ID,
 } from 'utils/constants';
 import { SecretKeyId, SecretService } from 'libs/secret/secret.service';
-import { Response } from 'express';
+import { Response } from 'types';
 
 @Injectable()
 export class TokenService {

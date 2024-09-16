@@ -5,12 +5,13 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { Response } from 'types';
 import { IS_PROD } from 'utils/constants';
 
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse();
+    const response: Response = host.switchToHttp().getResponse();
 
     const status = exception.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -22,7 +23,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
       Logger.error(exception.message, 'ApiExceptionFilter');
     }
 
-    return response.status(status).json({
+    return response.status(status).send({
       status,
       code: exception.code || 'INTERNAL_SERVER_ERROR',
       message: exception.message || 'Internal Server Error',

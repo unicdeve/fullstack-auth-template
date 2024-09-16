@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from '../services/auth.service';
-import { Response } from 'express';
 import { SignUpDto } from 'auth/dto/signup.dto';
 import { JwtAuthGuard } from 'auth/jwt-auth.guard';
 import { RequestWithAuthUser, RequestWithPassportUser } from 'auth/auth.types';
 import { TokenService } from 'auth/services/token.service';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'types';
 
 @Controller('local-auth')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -58,7 +58,7 @@ export class LocalAuthContoller {
   async signIn(@Res() res: Response, @Req() req: RequestWithPassportUser) {
     await this.tokenService.setAuthCookies(res, req.user);
 
-    res.json({
+    res.send({
       status: 'success',
       data: req.user,
       meta: null,

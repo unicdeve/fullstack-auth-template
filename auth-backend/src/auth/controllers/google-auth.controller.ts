@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { Response } from 'express';
+import { Response } from 'types';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithPassportUser } from 'auth/auth.types';
 import { ConfigService } from '@nestjs/config';
@@ -48,7 +48,7 @@ export class GoogleAuthContoller {
     await this.tokenService.setAuthCookies(res, req.user);
 
     res
-      .status(HttpStatus.OK)
+      .status(HttpStatus.FOUND)
       .redirect(
         this.configService.getOrThrow<string>('frontend_client_origin'),
       );

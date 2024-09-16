@@ -7,7 +7,7 @@ import {
 import { AuthService } from 'auth/services/auth.service';
 import { EmailService } from 'auth/services/email.service';
 import { TokenService } from 'auth/services/token.service';
-import { Response } from 'express';
+import { Response } from 'types';
 import { BadRequestError } from 'libs/errors/bad-request.error';
 
 @Controller('magic-link')
