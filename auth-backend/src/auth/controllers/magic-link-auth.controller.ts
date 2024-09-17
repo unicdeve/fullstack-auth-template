@@ -1,14 +1,15 @@
 import { Controller, Post, Body, Res, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import {
   MagicLinkRequestDto,
   MagicLinkTokenDto,
 } from 'auth/dto/magic-link.dto';
 import { AuthService } from 'auth/services/auth.service';
-import { EmailService } from 'auth/services/email.service';
 import { TokenService } from 'auth/services/token.service';
 import { Response } from 'types';
 import { BadRequestError } from 'libs/errors/bad-request.error';
+import { MailerQueueService } from 'libs/mailer/mailer-queue.service';
 
 @Controller('magic-link')
 export class MagicLinkController {
@@ -16,7 +17,7 @@ export class MagicLinkController {
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
     private readonly tokenService: TokenService,
-    private readonly emailService: EmailService,
+    private readonly mailerQueueService: MailerQueueService,
   ) {}
 
   @Post('request')
@@ -28,10 +29,9 @@ export class MagicLinkController {
     }
 
     const token = await this.tokenService.generateMagicLinkToken(user);
-
     const magicLink = `${this.configService.getOrThrow<string>('frontend_client_origin')}/magic-link/verify?token=${token}`;
-    // You could use a message-queueing system (like RabbitMQ) to manage Nodemailer email messages.
-    await this.emailService.sendMagicLink(user.email, magicLink);
+
+    await this.mailerQueueService.addMagicLink(user.email, magicLink);
 
     return {
       status: 'success',

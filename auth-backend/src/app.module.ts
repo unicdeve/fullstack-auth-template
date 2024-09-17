@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from 'libs/prisma/prisma.module';
+import { QueueModule } from 'libs/queue/queue.module';
 import { config } from 'config';
 import { AuthModule } from 'auth/auth.module';
 import { SecretModule } from 'libs/secret/secret.module';
@@ -14,6 +16,7 @@ import { SecretModule } from 'libs/secret/secret.module';
       load: [config],
       cache: true,
     }),
+    QueueModule,
     ScheduleModule.forRoot(),
     SecretModule,
     PrismaModule,

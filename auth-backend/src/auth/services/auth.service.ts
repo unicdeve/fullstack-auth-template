@@ -239,15 +239,15 @@ export class AuthService {
 
   /**
    * @description compares savedHashPassowrd and user's password
-   * @param authPassword
+   * @param hashed
    * @param password
    * @returns Promise<boolean>
    */
   private async validatePasswords(
-    authPassword: string,
+    hashed: string,
     password: string,
   ): Promise<boolean> {
-    const isMatch = await compare(password, authPassword).then((same) => same);
+    const isMatch = await compare(password, hashed).then((same) => same);
 
     return isMatch;
   }
