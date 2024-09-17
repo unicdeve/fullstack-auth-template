@@ -29,9 +29,13 @@ import { MailerModule } from 'libs/mailer/mailer.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('access_token_secret'),
+        secret: configService.getOrThrow<string>(
+          'access_token.secrets.current.secret',
+        ),
         signOptions: {
-          expiresIn: configService.get<string>('access_token_expires_in'),
+          expiresIn: configService.getOrThrow<string>(
+            'access_token.expires_in',
+          ),
         },
       }),
     }),

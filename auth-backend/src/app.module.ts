@@ -9,6 +9,9 @@ import { QueueModule } from 'libs/queue/queue.module';
 import { config } from 'config';
 import { AuthModule } from 'auth/auth.module';
 import { SecretModule } from 'libs/secret/secret.module';
+import { seconds, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ApiThrottlerGuard } from 'api-throttler.guard';
 
 @Module({
   imports: [
@@ -16,6 +19,23 @@ import { SecretModule } from 'libs/secret/secret.module';
       load: [config],
       cache: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: seconds(1),
+        limit: 2,
+      },
+      {
+        name: 'medium',
+        ttl: seconds(10),
+        limit: 15,
+      },
+      {
+        name: 'long',
+        ttl: seconds(60),
+        limit: 40,
+      },
+    ]),
     QueueModule,
     ScheduleModule.forRoot(),
     SecretModule,
@@ -23,6 +43,12 @@ import { SecretModule } from 'libs/secret/secret.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ApiThrottlerGuard,
+    },
+    AppService,
+  ],
 })
 export class AppModule {}
