@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const HomePage = () => {
-	const { user, isLoading, logout } = useAuth();
+	const { user, isLoading, logout, logoutAll } = useAuth();
 
 	if (isLoading) {
 		return (
@@ -44,7 +44,10 @@ export const HomePage = () => {
 			)}
 
 			{user ? (
-				<Button onClick={logout}>Log out</Button>
+				<div className='flex flex-col gap-4'>
+					<Button onClick={logoutAll}>Log out all devices</Button>
+					<Button onClick={logout}>Log out</Button>
+				</div>
 			) : (
 				<Link to='/login'>
 					<Button>Login</Button>

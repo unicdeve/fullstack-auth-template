@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from '../services/auth.service';
-import { Response } from 'express';
 import { SignUpDto } from 'auth/dto/signup.dto';
 import { JwtAuthGuard } from 'auth/jwt-auth.guard';
 import { RequestWithAuthUser, RequestWithPassportUser } from 'auth/auth.types';
 import { TokenService } from 'auth/services/token.service';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'types';
 
 @Controller('local-auth')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -58,7 +58,7 @@ export class LocalAuthContoller {
   async signIn(@Res() res: Response, @Req() req: RequestWithPassportUser) {
     await this.tokenService.setAuthCookies(res, req.user);
 
-    res.json({
+    res.send({
       status: 'success',
       data: req.user,
       meta: null,
@@ -71,7 +71,7 @@ export class LocalAuthContoller {
    * @returns Promise<any>
    */
   @UseGuards(JwtAuthGuard)
-  @Get('/me')
+  @Get('me')
   public async getUser(@Req() req: RequestWithAuthUser) {
     const userId = req?.user?.userId || '';
 
@@ -90,9 +90,33 @@ export class LocalAuthContoller {
    * @returns Promise<any>
    */
   @UseGuards(JwtAuthGuard)
-  @Delete('/logout')
+  @Delete('logout')
   public async logout(@Res({ passthrough: true }) res: Response) {
     this.tokenService.deleteAuthCookies(res);
+
+    return {
+      status: 'success',
+      data: null,
+      meta: null,
+    };
+  }
+
+  /**
+   * @description This doesn't log out all user session immediately;
+   * but it gracefully logs out all the user's sessions by changing the `authTokenVersion`
+   * thereby stopping the system from issuing new accessToken and refreshToken
+   * @param req.authorization
+   * @returns Promise<Res>
+   */
+  @UseGuards(JwtAuthGuard)
+  @Delete('logout/all')
+  public async logoutAll(
+    @Req() req: RequestWithAuthUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    this.tokenService.deleteAuthCookies(res);
+
+    await this.authService.incrementUserAuthTokenVersion(req.user.userId);
 
     return {
       status: 'success',

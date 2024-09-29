@@ -2,9 +2,9 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ResetPasswordDto } from 'auth/dto/reset-password.dto';
 import { AuthService } from 'auth/services/auth.service';
-import { EmailService } from 'auth/services/email.service';
 import { TokenService } from 'auth/services/token.service';
 import { BadRequestError } from 'libs/errors/bad-request.error';
+import { MailerQueueService } from 'libs/mailer/mailer-queue.service';
 
 @Controller('forget-password')
 export class ForgetPasswordAuthController {
@@ -12,7 +12,7 @@ export class ForgetPasswordAuthController {
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
     private readonly tokenService: TokenService,
-    private readonly emailService: EmailService,
+    private readonly mailerQueueService: MailerQueueService,
   ) {}
 
   /**
@@ -31,7 +31,7 @@ export class ForgetPasswordAuthController {
     const token = await this.tokenService.generateResetPasswordLinkToken(user);
 
     const resetPasswordLink = `${this.configService.getOrThrow<string>('frontend_client_origin')}/forget-password/reset?token=${token}`;
-    await this.emailService.sendForgetPasswordLink(
+    await this.mailerQueueService.addForgetPasswordLink(
       user.email,
       resetPasswordLink,
     );

@@ -84,6 +84,8 @@ export const config = () => {
       process.env.FRONTEND_CLIENT_ORIGIN || 'http://localhost:3100',
     email_user: process.env.EMAIL_USER,
     email_pass: process.env.EMAIL_PASS,
+    queue_host: process.env.QUEUE_HOST,
+    queue_port: process.env.QUEUE_PORT,
   };
 };
 

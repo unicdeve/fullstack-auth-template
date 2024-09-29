@@ -1,8 +1,9 @@
 import { User } from '@prisma/client';
-import { Request } from 'express';
+import { Request, Response } from 'types';
 
 export type JwtTokenPayload = {
   userId: string;
+  authTokenVersion: number | null | undefined;
 };
 
 export type OAuthProvider = 'google' | 'facebook' | 'github';
@@ -20,7 +21,7 @@ export interface RequestWithPassportUser extends Request {
   user: User;
 }
 
-export interface RequestWithAuthUser extends Request {
+export interface RequestWithAuthUser extends Response {
   user: JwtTokenPayload;
 }
 

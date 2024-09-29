@@ -63,13 +63,12 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    /**
-     * You could decide not check the refreshTokenVersion, and in turn not query the User table at all
-     * Thereby, relying on the fact that your refreshToken is valid, just sign new ones, no problem, ahaha
-     */
     const user = await this.authService.findUserById(data.userId);
 
-    if (!user) {
+    /**
+     * Make sure the `authTokenVersion` matches the one in the payload
+     */
+    if (!user || data.authTokenVersion !== user.authTokenVersion) {
       throw new UnauthorizedException();
     }
 
@@ -111,9 +110,9 @@ export class JwtAuthGuard implements CanActivate {
    * @param request 
    * @returns 
    *  Headers should be set like this
-   * headers: {
-      'Authorization': `Bearer ${accessToken},${refreshToken}`
-    },
+      headers: {
+        'Authorization': `Bearer ${accessToken},${refreshToken}`
+      }
    */
   private extractTokensFromHeader(request: Request): TokensType {
     const authHeader = request.headers.authorization;

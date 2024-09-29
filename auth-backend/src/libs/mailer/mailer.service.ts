@@ -4,7 +4,7 @@ import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class EmailService {
+export class MailerService {
   private transporter: nodemailer.Transporter;
 
   constructor(private readonly configService: ConfigService) {
@@ -19,7 +19,7 @@ export class EmailService {
 
   async sendMagicLink(email: string, link: string): Promise<void> {
     const mailOptions = {
-      from: this.configService.getOrThrow<string>('email_user'),
+      from: this.getMailFrom(),
       to: email,
       subject: 'Your Magic Link',
       text: `Click on this link to log in: ${link}`,
@@ -31,7 +31,7 @@ export class EmailService {
 
   async sendForgetPasswordLink(email: string, link: string): Promise<void> {
     const mailOptions = {
-      from: this.configService.getOrThrow<string>('email_user'),
+      from: this.getMailFrom(),
       to: email,
       subject: 'Auth Template - Reset password',
       text: `Click on this link to reset password: ${link}`,
@@ -39,5 +39,9 @@ export class EmailService {
     };
 
     await this.transporter.sendMail(mailOptions);
+  }
+
+  private getMailFrom() {
+    return `Auth Template <${this.configService.getOrThrow<string>('email_user')}>`;
   }
 }

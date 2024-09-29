@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: auth-template-user
+      POSTGRES_PASSWORD: auth-template-password
+      POSTGRES_DB: auth_template_db
+    ports:
+      - '5401:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - nest-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - '6370:6379'
+    networks:
+      - nest-network
+
+networks:
+  nest-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

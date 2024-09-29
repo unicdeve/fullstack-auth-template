@@ -180,8 +180,8 @@ export class AuthService {
 
   /**
    * @description creates new user in DB
-   * @param SignUpDto
-   * @returns Promise<AuthTokens>
+   * @param UpdateUserPasswordType
+   * @returns Promise<User>
    */
   async updateUserPassword({ newPassword, userId }: UpdateUserPasswordType) {
     const user = await this.findUserById(userId);
@@ -212,16 +212,42 @@ export class AuthService {
   }
 
   /**
+   * @description creates new user in DB
+   * @param SignUpDto
+   * @returns Promise<User>
+   */
+  async incrementUserAuthTokenVersion(userId: string) {
+    try {
+      const user = await this.prismaService.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          authTokenVersion: {
+            increment: 1,
+          },
+        },
+      });
+
+      delete user.password;
+
+      return user;
+    } catch (e) {
+      throw BadRequestError('user', 'User not found');
+    }
+  }
+
+  /**
    * @description compares savedHashPassowrd and user's password
-   * @param authPassword
+   * @param hashed
    * @param password
    * @returns Promise<boolean>
    */
   private async validatePasswords(
-    authPassword: string,
+    hashed: string,
     password: string,
   ): Promise<boolean> {
-    const isMatch = await compare(password, authPassword).then((same) => same);
+    const isMatch = await compare(password, hashed).then((same) => same);
 
     return isMatch;
   }
