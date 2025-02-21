@@ -16,7 +16,12 @@ export class SignUpDto {
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  readonly name: string;
+  readonly firstName: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  readonly lastName: string;
 
   @IsNotEmpty({
     message: 'Password is required.',

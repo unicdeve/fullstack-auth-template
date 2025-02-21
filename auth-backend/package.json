@@ -101,6 +101,12 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^libs/(.*)$": "<rootDir>/libs/$1",
+      "^auth/(.*)$": "<rootDir>/auth/$1",
+      "^@/(.*)$": "<rootDir>/$1",
+      "^utils/(.*)$": "<rootDir>/utils/$1"
+    }
   }
 }
