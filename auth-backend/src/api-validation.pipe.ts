@@ -27,7 +27,7 @@ export class ApiValidationPipe extends ValidationPipe {
 
         return {
           status: HttpStatus.BAD_REQUEST,
-          code: '"ERR_BAD_REQUEST"',
+          code: 'ERR_BAD_REQUEST',
           message: Object.values(data[0])[0],
           data,
         };
